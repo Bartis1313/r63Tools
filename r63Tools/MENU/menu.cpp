@@ -308,11 +308,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 static std::array allTabs =
 {
     TabRender{ "Typeinfo", &typeinfo::draw },
-    TabRender{ "Log", &entity::draw },
-    TabRender{ "Files", &ff::draw },
-    TabRender{ "FF", &drawMisc },
-    TabRender{ "Dev", &drawDev },
-    TabRender{ "Ent", &drawEnt },
+    TabRender{ "Entity", &entity::draw },
+    TabRender{ "FF", &ff::draw },
 };
 
 void menu::draw()

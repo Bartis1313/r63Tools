@@ -4,7 +4,7 @@
 #include "widgets.h"
 #include <imgui_stdlib.h>
 
-static fb::ClassInfo* findClassInfo(const char* ClassName)
+static fb::ClassInfo* findClassInfo(const char* className)
 {
     const auto pFirstTypeInfo = OFFSET_FIRSTTYPEINFO;
     auto* ppTypesList = reinterpret_cast<fb::TypeInfo**>(pFirstTypeInfo);
@@ -19,7 +19,7 @@ static fb::ClassInfo* findClassInfo(const char* ClassName)
         if (!IsValidPtr(ti->m_InfoData) || !IsValidPtr(ti->m_InfoData->m_Name))
             continue;
 
-        if (_stricmp(ti->m_InfoData->m_Name, ClassName) != 0)
+        if (_stricmp(ti->m_InfoData->m_Name, className) != 0)
             continue;
 
         if (ti->GetTypeCode() != fb::BasicTypesEnum::kTypeCode_Class)
