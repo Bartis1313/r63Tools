@@ -1,4 +1,4 @@
-#include "typeinfo.h"
+#include "mtypeinfo.h"
 
 #include "widgets.h"
 #include "TextEditor.h"

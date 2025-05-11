@@ -301,7 +301,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 #include "widgets.h"
 #include <array>
 
-#include "typeinfo.h"
+#include "mtypeinfo.h"
 #include "entity.h"
 #include "ff.h"
 
