@@ -15,14 +15,6 @@ namespace FF
 		ScreenshotFormat_RawData //0x0006
 	};
 
-	enum ScreenType
-	{
-		SUCCESS, // 0 seem always ok
-		UNK_1,
-		UNK_2,
-		UNK_3
-	};
-
 	struct GameBlocksScreenV1
 	{
 		uint32_t m_width;
@@ -31,4 +23,12 @@ namespace FF
 		ScreenshotFormat m_screenshotFormat;
 	};
 	// 0xAD0 + 0x28 = player
+
+	inline char requestScreen(fb::ServerPlayer* player, const FF::GameBlocksScreenV1& format, char unkType = 0)
+	{
+		typedef char(__fastcall* tRequestScreenshot1)(__int64 a1, fb::ServerPlayer* player, const FF::GameBlocksScreenV1& a3, char unk);
+		tRequestScreenshot1 ffRequestScreenshot1 = (tRequestScreenshot1)0x140156C50;
+
+		return ffRequestScreenshot1(*(__int64*)0x14265D3B0, player, format, unkType);
+	}
 }

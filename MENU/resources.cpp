@@ -105,15 +105,16 @@ void MinimalResourceEditor::Render()
         ImGui::Text("Select %s Instance:", typeName.c_str());
         ImGui::Text("Found %zu instances", instances.size());
 
-        std::vector<std::string> instanceLabels(instances.size());
+        std::vector<std::string> instanceLabels;
+        instanceLabels.reserve(instances.size());
+
         for (size_t i = 0; i < instances.size(); i++)
         {
-            struct PseudoAsset
+            struct PseudoAsset // fb::Asset (any frosbite resource)
             {
                 char pad[16];
                 char* m_Name;
             };
-
             char buffer[256];
             PseudoAsset* asset = reinterpret_cast<PseudoAsset*>(instances[i]);
             snprintf(buffer, sizeof(buffer), "[%zu] 0x%p (%s)", i, instances[i], asset->m_Name);

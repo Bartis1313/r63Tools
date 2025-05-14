@@ -22,7 +22,6 @@ static ID3D11DeviceContext*     g_pd3dDeviceContext = nullptr;
 static IDXGISwapChain*          g_pSwapChain = nullptr;
 static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
 static ID3D11RenderTargetView*  g_mainRenderTargetView = nullptr;
-static ID3D11Device*            g_pd3dDevice = nullptr;
 
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
@@ -32,7 +31,7 @@ void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Main code
-void internalDraw()
+void menu::drawInternal()
 {
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
@@ -83,7 +82,7 @@ void internalDraw()
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
-    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
+    ImGui_ImplDX11_Init(menu::g_pd3dDevice, g_pd3dDeviceContext);
 
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -110,28 +109,26 @@ void internalDraw()
     bool done = false;
     while (!done)
     {
-        auto isPossibleToDraw = []
+        auto isPossibleToDraw = []()
             {
                 static HWND bf4 = nullptr;
                 static bool isWindowVisible = false;
-                static auto lastCheckTime = ImGui::GetTime();
+                static double lastCheckTime = 0.0;
 
                 if (!bf4 || !IsWindow(bf4))
                 {
                     bf4 = FindWindowA("Battlefield 4 Server", nullptr);
                 }
 
-                auto now = ImGui::GetTime();
-                if (now - lastCheckTime > 10)
+                double currentTime = ImGui::GetTime();
+                if (currentTime - lastCheckTime > 0.5)
                 {
                     isWindowVisible = bf4 && !IsIconic(bf4);
-                    lastCheckTime = now;
+                    lastCheckTime = currentTime;
                 }
 
                 return isWindowVisible;
             };
-
-
 
         bool possibleToDraw = isPossibleToDraw();
         // Poll and handle messages (inputs, window resize, etc.)
@@ -220,9 +217,9 @@ bool CreateDeviceD3D(HWND hWnd)
     //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
     D3D_FEATURE_LEVEL featureLevel;
     const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
-    HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+    HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &menu::g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
     if (res == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
-        res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+        res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &menu::g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
     if (res != S_OK)
         return false;
 
@@ -235,14 +232,14 @@ void CleanupDeviceD3D()
     CleanupRenderTarget();
     if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = nullptr; }
     if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = nullptr; }
-    if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = nullptr; }
+    if (menu::g_pd3dDevice) { menu::g_pd3dDevice->Release(); menu::g_pd3dDevice = nullptr; }
 }
 
 void CreateRenderTarget()
 {
     ID3D11Texture2D* pBackBuffer;
     g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-    g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_mainRenderTargetView);
+    menu::g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_mainRenderTargetView);
     pBackBuffer->Release();
 }
 
@@ -314,5 +311,22 @@ static std::array allTabs =
 
 void menu::draw()
 {
+    ImGui::Begin("R63 Tools");
 
+    if (ImGui::BeginTabBar("tabbar", ImGuiTabBarFlags_Reorderable))
+    {
+        for (const auto& el : allTabs)
+        {
+            if (ImGui::BeginTabItem(el.m_name))
+            {
+                if (el.funcExist())
+                    el.m_func();
+
+                ImGui::EndTabItem();
+            }
+        }
+        ImGui::EndTabBar();
+    }
+
+    ImGui::End();
 }
