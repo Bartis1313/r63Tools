@@ -82,21 +82,37 @@ void entity::draw()
     static ImS64 minPad = 0;
     static ImS64 maxPad = 0x100; // should do some proper finding
 
+    static bool includeOnlyIterable = true;
+
+#ifdef _WIN64
     if (ImGui::SliderScalar("Padding for ent (offsetof to link)", ImGuiDataType_S64, &padding, &minPad, &maxPad, "0x%04X"))
     {
 
     }
+#elif _WIN32
+    ImGui::Checkbox("includeOnlyIterable", &includeOnlyIterable);
+#endif
 
-    if (ImGui::InputTextWithHint("Drop ent name", "Press enter to dump", & typen, ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::InputTextWithHint("Drop ent name", "Press enter to dump", &typen, ImGuiInputTextFlags_EnterReturnsTrue))
     {
         addr.clear();
         selectedEntity = -1;
         cInfo = findClassInfo(typen.c_str());
-
-        for (auto el : fb::EntityList<fb::TypeInfo>{ cInfo, padding })
+        if (cInfo)
         {
-            addr.push_back(el);
-        }
+
+#ifdef _WIN64
+            for (auto el : fb::EntityList<fb::TypeInfo>{ cInfo, padding })
+            {
+                addr.push_back(el);
+            }
+#elif _WIN32
+            for (auto el : fb::EntityList<fb::TypeInfo>{ cInfo, includeOnlyIterable })
+            {
+                addr.push_back(el);
+            }
+#endif
+    }
     }
 
     if (!cInfo)

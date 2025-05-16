@@ -112,7 +112,8 @@ void MinimalResourceEditor::Render()
         {
             struct PseudoAsset // fb::Asset (any frosbite resource)
             {
-                char pad[16];
+                void* pad1;
+                void* pad2;
                 char* m_Name;
             };
             char buffer[256];

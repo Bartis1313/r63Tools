@@ -11,8 +11,10 @@ bool hooks::init()
 {
 	MH_Initialize();
 
+#ifdef _WIN64
 	CREATE_SAFE_HOOK(0x1403C3DB0, hkFF_ServerScreenshotReceivedMessage, oFF_ServerScreenshotReceivedMessage);
-	CREATE_SAFE_HOOK(0x1401A8800, hkPBsdk_DropClient, oPBsdk_DropClient);
+#endif
+	CREATE_SAFE_HOOK(WIN32_64(0x01117A50, 0x1401A8800), hkPBsdk_DropClient, oPBsdk_DropClient);
 
 	if (MH_STATUS all = MH_EnableHook(MH_ALL_HOOKS); all != MH_OK)
 		printf("Couldn't enable hooks %s\n", MH_StatusToString(all));
@@ -40,7 +42,7 @@ char __fastcall hooks::hkFF_ServerScreenshotReceivedMessage(__int64 a1, fb::Serv
 	return oFF_ServerScreenshotReceivedMessage(a1, player, buf, size);
 }
 
-void __fastcall hooks::hkPBsdk_DropClient(unsigned int index, char* reason)
+void WIN32_64(__cdecl, __fastcall) hooks::hkPBsdk_DropClient(unsigned int index, char* reason)
 {
 	return;
 }

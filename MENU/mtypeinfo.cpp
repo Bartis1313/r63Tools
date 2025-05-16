@@ -160,14 +160,15 @@ void typeinfo::draw()
 
         if (count)
         {
-            ImGui::Text("Typeinfos %llu", sdkGEn.m_typeInfos->size());
-            ImGui::Text("ClassInfos %llu", sdkGEn.m_classInfos->size());
-            ImGui::Text("EnumInfos %llu", sdkGEn.m_enumInfos->size());
-            ImGui::Text("ValueInfos %llu", sdkGEn.m_valueInfos->size());
-            ImGui::Text("SDK Declarations %llu", declarationsNames.size());
-            ImGui::Text("SDK Classes %llu", sdkGEn.m_sdkClasses->size());
-            ImGui::Text("SDK Enums %llu", sdkGEn.m_sdkEnums->size());
-            ImGui::Text("SDK Structs %llu", sdkGEn.m_sdkStructs->size());
+            ImGui::Text("Typeinfos %llu", static_cast<unsigned long long>(sdkGEn.m_typeInfos->size()));
+            ImGui::Text("ClassInfos %llu", static_cast<unsigned long long>(sdkGEn.m_classInfos->size()));
+            ImGui::Text("EnumInfos %llu", static_cast<unsigned long long>(sdkGEn.m_enumInfos->size()));
+            ImGui::Text("ValueInfos %llu", static_cast<unsigned long long>(sdkGEn.m_valueInfos->size()));
+            ImGui::Text("SDK Declarations %llu", static_cast<unsigned long long>(declarationsNames.size()));
+            ImGui::Text("SDK Classes %llu", static_cast<unsigned long long>(sdkGEn.m_sdkClasses->size()));
+            ImGui::Text("SDK Enums %llu", static_cast<unsigned long long>(sdkGEn.m_sdkEnums->size()));
+            ImGui::Text("SDK Structs %llu", static_cast<unsigned long long>(sdkGEn.m_sdkStructs->size()));
+
 
             if (ImGui::CollapsingHeader("Searcher", ImGuiTreeNodeFlags_None))
             {

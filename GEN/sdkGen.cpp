@@ -517,7 +517,13 @@ namespace FBBackend
                 // { 
                 //     return 0x1337; 
                 // }
-                sprintf_s(buffer, "\n    static __inline uintptr_t ClassInfoPtr()\n    {\n        return 0x%016llX;\n    }", reinterpret_cast<uintptr_t>(sdkClass->m_rawClassInfo));
+                uintptr_t ptr = reinterpret_cast<uintptr_t>(sdkClass->m_rawClassInfo);
+
+#ifdef _WIN64
+                sprintf_s(buffer, "\n    static __inline uintptr_t ClassInfoPtr()\n    {\n        return 0x%016llX;\n    }", static_cast<unsigned long long>(ptr));
+#else
+                sprintf_s(buffer, "\n    static __inline uintptr_t ClassInfoPtr()\n    {\n        return 0x%08X;\n    }", static_cast<unsigned int>(ptr));
+#endif
 
 
                 output += buffer;

@@ -111,19 +111,23 @@ void menu::drawInternal()
     {
         auto isPossibleToDraw = []()
             {
-                static HWND bf4 = nullptr;
+                static HWND bf = nullptr;
                 static bool isWindowVisible = false;
                 static double lastCheckTime = 0.0;
 
-                if (!bf4 || !IsWindow(bf4))
+                if (!bf || !IsWindow(bf))
                 {
-                    bf4 = FindWindowA("Battlefield 4 Server", nullptr);
+#ifdef _WIN64
+                    bf = FindWindowA("Battlefield 4 Server", nullptr);
+#elif _WIN32
+                    bf = FindWindowW(L"Battlefield 3™ Server", nullptr);
+#endif
                 }
 
                 double currentTime = ImGui::GetTime();
                 if (currentTime - lastCheckTime > 0.5)
                 {
-                    isWindowVisible = bf4 && !IsIconic(bf4);
+                    isWindowVisible = bf && !IsIconic(bf);
                     lastCheckTime = currentTime;
                 }
 
@@ -306,7 +310,9 @@ static std::array allTabs =
 {
     TabRender{ "Typeinfo", &typeinfo::draw },
     TabRender{ "Entity", &entity::draw },
+#ifdef _WIN64
     TabRender{ "FF", &ff::draw },
+#endif
 };
 
 void menu::draw()

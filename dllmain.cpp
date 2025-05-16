@@ -1,5 +1,7 @@
 #include "api.h"
 
+#include <Windows.h>
+
 #include "MENU/menu.h"
 #include "HOOKS/hooks.h"
 #include <filesystem>
@@ -13,7 +15,11 @@ DWORD WINAPI menuThread([[maybe_unused]] LPVOID)
 DWORD WINAPI init([[maybe_unused]] LPVOID)
 {
 #ifdef USE_PB_DLL
+#if _WIN64
 	g_OriginalPbsv = LoadLibraryA(std::filesystem::path{ INSTANCE_PATH / "pb" / "real_pbsv.d64" }.string().c_str());
+#elif _WIN32
+	g_OriginalPbsv = LoadLibraryA(std::filesystem::path{ INSTANCE_PATH / "pb" / "real_pbsv.dll" }.string().c_str());
+#endif
 #endif
 	hooks::init();
 

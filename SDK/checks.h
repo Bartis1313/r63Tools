@@ -2,28 +2,43 @@
 
 #include <Windows.h>
 
-constexpr bool IsValidPtr(PVOID p)
+__forceinline bool IsValidPtr(void* p)
 {
-	// 0x000F000000000000 _PTR_MAX_VALUE
-	return (p >= (PVOID)0x10000) && (p < ((PVOID)0x000F000000000000)) && p != nullptr;
+	constexpr uintptr_t MIN_PTR = 0x10000;
+#ifdef _WIN64
+	constexpr uintptr_t MAX_PTR = 0x000F000000000000;
+#else
+	constexpr uintptr_t MAX_PTR = 0xFFF00000;
+#endif
+
+	uintptr_t addr = reinterpret_cast<uintptr_t>(p);
+	return p != nullptr && addr >= MIN_PTR && addr < MAX_PTR;
 }
 
-__forceinline bool IsValidPtrWithAVTable_BF4(PVOID p)
+__forceinline bool IsValidPtrWithAVTable(void* p)
 {
-	if (IsValidPtr(p))
-	{
-		__try
-		{
-			auto vtable = *(void**)p;
-			if (IsValidPtr(vtable) && (uintptr_t)vtable > 0x140000000 && (uintptr_t)vtable < 0x1430C6B50)
-			{
-				return true;
-			}
-		}
-		__except (1)
-		{
-			return false;
-		}
-	}
-	return false;
+    if (!IsValidPtr(p))
+        return false;
+
+    __try
+    {
+        void* vtable = *(void**)p;
+        if (!IsValidPtr(vtable))
+            return false;
+
+#ifdef _WIN64
+        constexpr uintptr_t VTABLE_MIN = 0x140000000;
+        constexpr uintptr_t VTABLE_MAX = 0x1430C6B50;
+#else
+        constexpr uintptr_t VTABLE_MIN = 0x00401000;
+        constexpr uintptr_t VTABLE_MAX = 0x02CC0FFF;
+#endif
+
+        uintptr_t vtAddr = reinterpret_cast<uintptr_t>(vtable);
+        return vtAddr >= VTABLE_MIN && vtAddr < VTABLE_MAX;
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER)
+    {
+        return false;
+    }
 }
