@@ -1,15 +1,16 @@
 # r63Tools
 
-My frosbite dumper for FB3, server | client
+My frosbite dumper for FB3/FB2, server | client
+For client you need to change offsets
+For latest fb3, typeinfo needs more resolving (hashing etc...)
 
 Has:
-- entity iteration for fb3 (with memory view)
+- entity iteration for fb2 / fb3 (with memory view)
 - typeinfo view and dump
 - resources view
-- fairfight wrapper (manual)
+- fairfight wrapper (manual only fb3)
 - disable pb drops (because it's crap)
 
-Currently supports only x64, bf3 had different ent iteration
 TODO: apply server resources live instead of on roundend + possible config
 
 ![Image1](https://github.com/user-attachments/assets/aa19c35a-f185-4703-9030-243d228c33af)
